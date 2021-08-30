@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 // API docs https://eonet.sci.gsfc.nasa.gov/docs/v3
 // HOW to guide https://eonet.sci.gsfc.nasa.gov/how-to-guide
 
-namespace EONETAPI
+namespace EonetApi
 {
     public class EonetService
     {
