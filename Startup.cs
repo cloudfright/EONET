@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using EONET.Data;
+using EONETAPI;
 
 namespace EONET
 {
@@ -29,6 +30,7 @@ namespace EONET
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddSingleton<EonetService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

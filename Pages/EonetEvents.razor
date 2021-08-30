@@ -1,0 +1,48 @@
+﻿@page "/eonetevents"
+
+@using EONETAPI
+@inject EonetService EventService
+
+<h1>Eonet Events</h1>
+
+<p>Natural events as reported by NASAs Eonet API.</p>
+
+
+@if (eonetevents == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Categories</th>
+            </tr>
+        </thead>
+        <tbody>
+        
+            @foreach (var eonetevent in eonetevents.Events)
+            {
+            <tr>
+                <td>@eonetevent.Title</td>
+                <td>@eonetevent.Categories.First().Title</td>
+            </tr>
+            }
+     
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private EONETAPI.EonetEvents eonetevents;
+
+    protected override async Task OnInitializedAsync()
+    {
+        eonetevents = await EventService.GetEvents();
+    }
+}
+
+
