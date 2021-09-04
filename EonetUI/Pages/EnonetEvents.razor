@@ -14,6 +14,19 @@
 }
 else
 {
+    <!--
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @NumResults
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">10</a>
+            <a class="dropdown-item" href="#">20</a>
+            <a class="dropdown-item" href="#">50</a>
+        </div>
+    </div>
+    -->
+
     <table class="table">
         <thead>
             <tr>
@@ -26,31 +39,76 @@ else
 
             @foreach (var eonetevent in eonetevents.Events)
             {
-            <tr>
-                <td>@eonetevent.Categories.First().Title</td>
-                <td>
-                    @eonetevent.Title
-                </td><!-- <td><a href="@eonetevent.Link">Link</a></td> -->
-                @foreach (var source in eonetevent.Sources)
-                {
-                  <td><a href="@source.Url">@source.Id.</a></td>
-     
-                }
-            </tr>
+                <tr>
+                    <td>@eonetevent.Categories.First().Title</td>
+                    <td>
+                        @eonetevent.Title
+                    </td><!-- <td><a href="@eonetevent.Link">Link</a></td> -->
+                    @foreach (var source in eonetevent.Sources)
+                    {
+                        <td><a href="@source.Url">@source.Id.</a></td>
+
+                    }
+                </tr>
             }
 
-            </tbody>
-        </table>
-        }
+        </tbody>
+    </table>
+}
 
-        @code {
+@code {
 
-        private EonetApi.EonetEvents eonetevents;
+    private EonetApi.EonetEvents eonetevents;
+    private int numResults = 20;
+    private List<string> categories = new List<string> { "Earthquakes", "Severe Storms", "Wildfires" };
 
-        protected override async Task OnInitializedAsync()
-        {
-        eonetevents = await EventService.GetEvents();
-        }
-        }
+    protected override async Task OnInitializedAsync()
+    {
+        eonetevents = await EventService.GetEvents(categories, numResults);
+    }
+}
+
+<!--
+@{ var list = new List<string> { ".NET", "Python", "Java" }; }
+<Dropdown TItem="string" OnSelected="@OnSelected">
+    <InitialTip>This is a dropdown list</InitialTip>
+    <ChildContent>
+        <DropdownListItem Item="@list[0]">.NET</DropdownListItem>
+        <DropdownListItem Item="@list[1]">Python</DropdownListItem>
+        <div class="dropdown-divider"></div>
+        <DropdownListItem Item="@list[2]">Java</DropdownListItem>
+    </ChildContent>
+</Dropdown>
+
+@code {
+    private void OnSelected(string selection)
+    {
+        Console.WriteLine(selection);
+    }
+}
+
+    https://stackoverflow.com/questions/58929072/dropdown-list-is-not-working-in-the-asp-net-blazor-component
 
 
+    https://gist.github.com/SQL-MisterMagoo/bc5713fb26bf84bf810d48d1f45c361a
+
+    https://blazorfiddle.com/s/3b18q1ix
+
+    https://chrissainty.com/a-detailed-look-at-data-binding-in-blazor/
+
+    https://blazor.radzen.com/
+
+    https://try.mudblazor.com/
+
+    https://github.com/Garderoben/MudBlazor.Templates
+
+    https://github.com/Garderoben/MudBlazor
+
+    https://www.c-sharpcorner.com/article/how-to-create-a-checkbox-list-in-blazor/
+
+    https://github.com/Megabit/Blazorise
+
+
+    https://docs.microsoft.com/en-us/aspnet/core/blazor/components/?view=aspnetcore-5.0#component-parameters
+
+    -->
