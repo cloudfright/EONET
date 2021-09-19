@@ -14,101 +14,133 @@
 }
 else
 {
-    <!--
-    <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            @NumResults
-        </button>
-        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="#">10</a>
-            <a class="dropdown-item" href="#">20</a>
-            <a class="dropdown-item" href="#">50</a>
-        </div>
-    </div>
-    -->
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Categories</th>
-                <th>Title</th>
-                <th>Links</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="container">
 
-            @foreach (var eonetevent in eonetevents.Events)
+        @foreach (var category in EonetService.Categories)
+        {
+            bool isChecked = selectedCategories.Contains(category.Key);
+
+            <div class="form-check form-check-inline">
+
+                <input class="form-check-input mb-3" type="checkbox" id="inlineCheckbox1" checked=@isChecked
+                       value="@category.Key" @onchange="eventArgs => { CategorySelected(category.Key, eventArgs.Value); }">
+
+                <label class="form-check-label mb-3" for="inlineCheckbox1">@category.Key</label>
+            </div>
+
+        }
+        <select class="form-select" aria-label="Number of results" @onchange="SetNumResults">
+
+            <option selected>Number of results</option>
+            @foreach (var resultOption in EonetService.MaxResults)
             {
-                <tr>
-                    <td>@eonetevent.Categories.First().Title</td>
-                    <td>
-                        @eonetevent.Title
-                    </td><!-- <td><a href="@eonetevent.Link">Link</a></td> -->
-                    @foreach (var source in eonetevent.Sources)
-                    {
-                        <td><a href="@source.Url">@source.Id.</a></td>
-
-                    }
-                </tr>
+                bool isChecked = numResults == resultOption;
+                <option value="@resultOption" selected=@isChecked>@resultOption</option>
             }
 
-        </tbody>
-    </table>
+        </select>
+
+        <button type="button" class="btn btn-primary mb-3" @onclick="GetData">Get Data</button>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Categories</th>
+                    <th>Title</th>
+                    <th>Links</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var eonetevent in eonetevents.Events)
+                {
+                    <tr>
+                        <td>@eonetevent.Categories.First().Title</td>
+                        <td>@eonetevent.Title</td>
+
+                        <!-- <td><a href="@eonetevent.Link">Link</a></td> -->
+                        @foreach (var source in eonetevent.Sources)
+                        {
+                            <td><a href="@source.Url">@source.Id.</a></td>
+                        }
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
 }
 
 @code {
 
-    private EonetApi.EonetEvents eonetevents;
-    private int numResults = 20;
-    private List<string> categories = new List<string> { "Earthquakes", "Severe Storms", "Wildfires" };
+    private EonetEvents eonetevents;
+    private int numResults = 10;
+    private List<string> selectedCategories = new List<string> { "Earthquakes", "Severe Storms", "Wildfires" };
+
+    private void SetNumResults(ChangeEventArgs e)
+    {
+        int.TryParse(e.Value.ToString(), out numResults);
+    }
+
+    private void CategorySelected(string category, object checkedValue)
+    {
+        if ((bool)checkedValue)
+        {
+            if (!selectedCategories.Contains(category))
+            {
+                selectedCategories.Add(category);
+            }
+        }
+        else
+        {
+            if (selectedCategories.Contains(category))
+            {
+                selectedCategories.Remove(category);
+            }
+        }
+
+    }
+
+    private async Task GetData()
+    {
+        eonetevents = await EventService.GetEvents(selectedCategories, numResults);
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        eonetevents = await EventService.GetEvents(categories, numResults);
+        eonetevents = await EventService.GetEvents(selectedCategories, numResults);
     }
 }
 
 <!--
-@{ var list = new List<string> { ".NET", "Python", "Java" }; }
-<Dropdown TItem="string" OnSelected="@OnSelected">
-    <InitialTip>This is a dropdown list</InitialTip>
-    <ChildContent>
-        <DropdownListItem Item="@list[0]">.NET</DropdownListItem>
-        <DropdownListItem Item="@list[1]">Python</DropdownListItem>
-        <div class="dropdown-divider"></div>
-        <DropdownListItem Item="@list[2]">Java</DropdownListItem>
-    </ChildContent>
-</Dropdown>
 
-@code {
-    private void OnSelected(string selection)
-    {
-        Console.WriteLine(selection);
-    }
-}
+     https://www.telerik.com/blogs/how-to-pass-arguments-to-your-onclick-functions-blazor
 
-    https://stackoverflow.com/questions/58929072/dropdown-list-is-not-working-in-the-asp-net-blazor-component
+     https://stackoverflow.com/questions/51234654/net-core-blazor-how-to-get-the-checkbox-value-if-it-is-checked
+
+     https://stackoverflow.com/questions/58929072/dropdown-list-is-not-working-in-the-asp-net-blazor-component
 
 
-    https://gist.github.com/SQL-MisterMagoo/bc5713fb26bf84bf810d48d1f45c361a
+     https://gist.github.com/SQL-MisterMagoo/bc5713fb26bf84bf810d48d1f45c361a
 
-    https://blazorfiddle.com/s/3b18q1ix
+     https://blazorfiddle.com/s/3b18q1ix
 
-    https://chrissainty.com/a-detailed-look-at-data-binding-in-blazor/
+     https://chrissainty.com/a-detailed-look-at-data-binding-in-blazor/
 
-    https://blazor.radzen.com/
+     https://blazor.radzen.com/
 
-    https://try.mudblazor.com/
+     https://try.mudblazor.com/
 
-    https://github.com/Garderoben/MudBlazor.Templates
+     https://github.com/Garderoben/MudBlazor.Templates
 
-    https://github.com/Garderoben/MudBlazor
+     https://github.com/Garderoben/MudBlazor
 
-    https://www.c-sharpcorner.com/article/how-to-create-a-checkbox-list-in-blazor/
+     https://www.c-sharpcorner.com/article/how-to-create-a-checkbox-list-in-blazor/
 
-    https://github.com/Megabit/Blazorise
+     https://github.com/Megabit/Blazorise
 
 
-    https://docs.microsoft.com/en-us/aspnet/core/blazor/components/?view=aspnetcore-5.0#component-parameters
+     https://docs.microsoft.com/en-us/aspnet/core/blazor/components/?view=aspnetcore-5.0#component-parameters
 
-    -->
+     -->

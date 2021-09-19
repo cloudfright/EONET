@@ -32,6 +32,7 @@ namespace EonetApi
 			{ "Wildfires","wildfires" }
 		};
 
+		public static readonly List<int> MaxResults = new List<int> { 10, 25, 50 };
 
 		public async Task<EonetEvents> GetEvents(List<string>categories, int numResults)
 		{
